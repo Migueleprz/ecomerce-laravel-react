@@ -1,0 +1,40 @@
+body{
+  margin: 0;
+  font-family: "Segoe UI", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.site-c{
+  min-height: 100vh;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+main {
+  flex: 1;
+}
+
+.productos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.productos .producto {
+  border: 1px #404040 solid;
+  margin: 1rem;
+}
+
+.productos .producto img{
+  width: 100%;
+  max-width: 150px;
+  float: 0 auto;
+}
+
+.productos .producto .ifo-producto {
+  padding: 1rem;
+}
