@@ -4,10 +4,27 @@ import {Helmet} from "react-helmet-async";
 import {Col, Image, ListGroup, Row, Button, Card} from "react-bootstrap";
 import AlertComponent from "./shared/AlertComponent";
 import {Link} from "react-router-dom";
+import axios from "axios";
+import {useNavigate} from "react-router";
 
 export default function CartPage() {
+    const navigate =  useNavigate();
     const {state, dispatch: ctxDispatch} = useContext(Store);
     const { cart: {cartItems}, } = state;
+    const upCart = async (item, cant) =>{
+       const {data} = await axios.get(`productos/${item.id}`);
+        if (cant > data.stock) {
+            alert('Lo sentimos. no tenemos esta cantidad');
+            return;
+        }
+        ctxDispatch({type: 'CART_ADD_ITEM', payload: {...item, cant}});
+    }
+    const removeItem = (item) =>{
+        ctxDispatch({type: 'CART_REMOVE_ITEM', payload: {...item}});
+    }
+    const paymentItem = (item) =>{
+       navigate('/signing?redirect=/pedido')
+    }
 
     return (
         <>
@@ -38,11 +55,19 @@ export default function CartPage() {
                                                     <span className={'text-capitalize fw-bold'}>{item.nombre}</span>
                                                 </Col>
                                                 <Col md={3}>
-                                                    <Button variant={'light'} disabled={item.cant === 1}>
+                                                    <Button
+                                                        variant={'light'}
+                                                        disabled={item.cant === 1}
+                                                        onClick={()=> upCart(item, item.cant - 1)}
+                                                    >
                                                         <i className={'fa fa-minus-circle fs-3'}/>
                                                     </Button>
                                                     <span className={'h2 mx-3'}>{item.cant}</span>
-                                                    <Button variant={'light'} disabled={item.cant === item.stock}>
+                                                    <Button
+                                                        variant={'light'}
+                                                        disabled={item.cant === item.stock}
+                                                        onClick={()=> upCart(item, item.cant +1)}
+                                                    >
                                                         <i className={'fa fa-plus-circle fs-3'}/>
                                                     </Button>
                                                 </Col>
@@ -50,7 +75,10 @@ export default function CartPage() {
                                                     <span>${item.precio}</span>
                                                 </Col>
                                                 <Col md={2}>
-                                                    <Button variant={'light'}>
+                                                    <Button
+                                                        variant={'light'}
+                                                        onClick={()=>removeItem(item)}
+                                                    >
                                                         <i className={'fa fa-close fs-3 text-danger'}/>
                                                     </Button>
                                                 </Col>
@@ -71,7 +99,13 @@ export default function CartPage() {
                                     <h4>Sub-Total: ${cartItems.reduce((sum, cant)=> sum + cant.precio * cant.cant, 0)} </h4>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    <Button variant={'warning'} type={'button'} disabled={cartItems.length === 0} className={'w-100'}>
+                                    <Button
+                                        variant={'warning'}
+                                        type={'button'}
+                                        disabled={cartItems.length === 0}
+                                        className={'w-100'}
+                                        onClick={paymentItem}
+                                    >
                                         Pagar <i className={'fa fa-dollar'} />
                                     </Button>
                                 </ListGroup.Item>
